@@ -87,6 +87,7 @@ th .lnk{display:flex;margin-top:4px}th .lnk a{font-size:11px;padding:3px 8px;tex
     <div style="text-align:right">
       <button class="btn dark" id="refresh">↻ Обновить результаты</button>
       <div class="stamp" id="stamp"></div>
+      <div class="lnk" style="margin-top:6px"><button id="bkDown" title="Сохранить все результаты в файл на этот компьютер">⬇ Скачать резервную копию</button> <button id="bkUp" title="Открыть ранее сохранённый файл копии">📂 Открыть копию</button><input type="file" id="bkFile" accept=".json,application/json" hidden></div>
     </div>
   </div>
   <div id="msg"></div>
@@ -96,7 +97,11 @@ th .lnk{display:flex;margin-top:4px}th .lnk a{font-size:11px;padding:3px 8px;tex
 </div>
 <script>
 /* Данные загружаются ТОЛЬКО по кнопке «Обновить результаты». Никаких таймеров и автообновления. */
-const API=/workers\.dev$/.test(location.hostname)?'/api/all':'https://hsk-progress.ch-tutor-world.workers.dev/api/all';
+/* Источники данных. Ученики пишут в каждый; кабинет читает все и берёт самую свежую версию каждой ДЗ.
+   Второе хранилище (Яндекс) добавляется сюда строкой, когда будет готово. */
+const SOURCES=[
+  {name:'Cloudflare',url:/workers\.dev$/.test(location.hostname)?'/api/all':'https://hsk-progress.ch-tutor-world.workers.dev/api/all'},
+];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let KEY='', DATA=null, OPEN=null;
@@ -121,7 +126,7 @@ function materials(){ const R=DATA&&DATA.roster; if(!R){$('mat').innerHTML='';re
   const grp=(t,rows)=>rows.length?'<div class="lbl" style="margin:4px 0 6px">'+t+'</div><div class="mat">'+rows.map(x=>'<div class="row"><b>'+esc(x.title)+'</b>'+links(x.url,1)+'</div>').join('')+'</div>':'';
   const les=(R.links||[]), hw=R.hws.filter(w=>w.url);
   $('mat').innerHTML=(les.length||hw.length)?'<div class="card"><h3 style="margin-bottom:8px">Виджеты</h3>'+grp('Классные виджеты',les)+grp('Домашние задания',hw)+'<div class="legend">«Открыть» — для вашей проверки (с пометкой ?uchitel, в кабинет ничего не попадает). «Ссылка ученику» копирует обычную ссылку.</div></div>':''; }
-function stamp(){ $('stamp').innerHTML=DATA?'Данные от <b>'+when(DATA.at)+'</b> · обновляются только по кнопке':'Данные ещё не загружены'; }
+function stamp(){ $('stamp').innerHTML=DATA?'Данные от <b>'+when(DATA.at)+'</b> · обновляются только по кнопке'+(DATA.src&&DATA.src.length>1?'<br>'+DATA.src.map(x=>(x.ok?'✓ ':'✗ ')+esc(x.n)).join(' · '):''):'Данные ещё не загружены'; }
 function msg(t,err){ $('msg').innerHTML=t?'<div class="note'+(err?' err':'')+'">'+t+'</div>':''; }
 
 function askKey(){
@@ -129,17 +134,48 @@ function askKey(){
   $('keyOk').onclick=()=>{ KEY=$('keyIn').value.trim(); try{localStorage.setItem('kab-key',KEY);}catch(e){} msg('Ключ сохранён. Нажмите «Обновить результаты».'); };
 }
 
+/* Слияние: для каждой пары ученик+ДЗ берём версию с самым поздним last. Старые данные не теряются. */
+function merge(a,b){ if(!a)return b; if(!b)return a;
+  const out={roster:b.roster||a.roster,data:JSON.parse(JSON.stringify(a.data||{})),at:Math.max(a.at||0,b.at||0)};
+  for(const u in (b.data||{})) for(const hw in b.data[u]){ const x=b.data[u][hw], y=(out.data[u]||{})[hw];
+    if(!y||(x.last||0)>=(y.last||0)) (out.data[u]=out.data[u]||{})[hw]=x; }
+  return out; }
+function keep(){ try{localStorage.setItem('kab-data',JSON.stringify(DATA));}catch(e){} }
+
 async function refresh(){
   if(!KEY){ askKey(); return; }
   const b=$('refresh'); b.disabled=true; b.textContent='Загружаю…';
-  try{ const r=await fetch(API+'?t='+Date.now(),{headers:{'X-Key':KEY},cache:'no-store'});
-    if(r.status===401){ KEY=''; try{localStorage.removeItem('kab-key');}catch(e){} askKey(); return; }
-    if(!r.ok) throw new Error(r.status);
-    DATA=await r.json(); try{localStorage.setItem('kab-data',JSON.stringify(DATA));}catch(e){}
-    msg(''); render();
-  }catch(e){ msg('Не получилось загрузить данные. Проверьте интернет и нажмите ещё раз.',true); }
-  finally{ b.disabled=false; b.textContent='↻ Обновить результаты'; stamp(); }
+  try{
+    const res=await Promise.all(SOURCES.map(async src=>{
+      try{ const r=await fetch(src.url+'?t='+Date.now(),{headers:{'X-Key':KEY},cache:'no-store'});
+        if(r.status===401) return {src,bad:'key'};
+        if(!r.ok) throw 0; return {src,d:await r.json()}; }catch(e){ return {src,bad:'net'}; } }));
+    const good=res.filter(x=>x.d);
+    if(!good.length&&res.some(x=>x.bad==='key')){ KEY=''; try{localStorage.removeItem('kab-key');}catch(e){} askKey(); return; }
+    let fresh=null; good.forEach(x=>{ fresh=merge(fresh,x.d); });
+    if(fresh){ fresh.roster=good[0].d.roster; fresh.at=Date.now(); DATA=merge(DATA,fresh); DATA.roster=fresh.roster; DATA.at=fresh.at; }
+    DATA&&(DATA.src=res.map(x=>({n:x.src.name,ok:!!x.d})));
+    keep();
+    const off=res.filter(x=>!x.d).map(x=>x.src.name);
+    if(!good.length) msg('Не получилось загрузить данные ни из одного хранилища. Показаны последние сохранённые. Проверьте интернет и нажмите ещё раз.',true);
+    else if(off.length) msg('Не ответило хранилище: '+off.join(', ')+'. Данные взяты из остальных, ничего не потеряно.');
+    else msg('');
+    render();
+  }finally{ b.disabled=false; b.textContent='↻ Обновить результаты'; stamp(); }
 }
+
+function backupDown(){
+  if(!DATA){ msg('Сначала нажмите «Обновить результаты».',true); return; }
+  const d=new Date(), f='kabinet-hsk3-'+d.toISOString().slice(0,10)+'.json';
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(DATA,null,1)],{type:'application/json'}));
+  a.download=f; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+  msg('Копия сохранена в файл '+f+' (папка «Загрузки»).');
+}
+function backupUp(file){
+  const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); if(!o||!o.roster||!o.data) throw 0;
+      DATA=merge(o,DATA); if(!DATA.roster)DATA.roster=o.roster; keep(); render(); msg('Копия из файла добавлена. Для каждой ДЗ показана самая свежая версия.'); }
+    catch(e){ msg('Этот файл не похож на резервную копию кабинета.',true); } };
+  r.readAsText(file); }
 
 function render(){
   stamp();
@@ -225,6 +261,7 @@ function dossier(id){
 }
 
 $('refresh').onclick=refresh;
+$('bkDown').onclick=backupDown; $('bkUp').onclick=()=>$('bkFile').click(); $('bkFile').onchange=e=>{ const f=e.target.files[0]; if(f)backupUp(f); e.target.value=''; };
 document.addEventListener('click',e=>{ const cp=e.target.closest('[data-copy]'); if(cp){ const t=cp.textContent; (navigator.clipboard?navigator.clipboard.writeText(cp.dataset.copy):Promise.reject()).then(()=>{cp.textContent='✓ скопировано';setTimeout(()=>cp.textContent=t,1500);},()=>prompt('Ссылка для ученика:',cp.dataset.copy)); return; }
   const b=e.target.closest('[data-s]'); if(!b)return; dossier(b.dataset.s);
   const t=b.dataset.h?document.getElementById('hw-'+b.dataset.h):$('dossier'); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); });
