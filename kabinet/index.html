@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Кабинет учителя HSK 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#191B2E;--ink-3:#3E4262;--paper:#F5F0E7;--paper-2:#EBE3D4;--card:#FBF9F4;--muted:#6C6982;--line:#DCD3C2;
+ --vio:#4E4C8E;--vio-2:#33315F;--vio-tint:#EAE8F5;--jade:#2E7F6C;--jade-tint:#E3F0EC;--gold:#BE9760;--gold-2:#8A6B34;--gold-tint:#F7EFDF;
+ --red:#BF5B4A;--red-tint:#F9EBE6;--grey-tint:#EFEBE3;
+ --serif:'Lora',Georgia,serif;--sans:'Manrope',system-ui,sans-serif;--han:'Noto Sans SC','Manrope',sans-serif;
+ --sh:0 2px 4px rgba(25,27,46,.05),0 14px 30px -18px rgba(25,27,46,.42)}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);font-size:15px;line-height:1.55;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;letter-spacing:-.01em;line-height:1.2}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;margin-bottom:22px}
+.seal{width:52px;height:52px;border-radius:14px;background:linear-gradient(150deg,#5B59A0,#33315F);color:#F1EFFA;display:grid;place-items:center;font:700 26px var(--han);box-shadow:var(--sh)}
+.top h1{font-size:28px}
+.top .sub{color:var(--muted);font-size:13px}
+.grow{flex:1}
+.btn{font-weight:700;font-size:14px;padding:11px 20px;border-radius:999px;border:none;transition:transform .15s}
+.btn.dark{background:linear-gradient(150deg,#2C2F4E,#191B2E);color:#F1EFFA;box-shadow:0 10px 24px -14px rgba(25,27,46,.9)}
+.btn.dark:hover{transform:translateY(-1px)}
+.btn.dark[disabled]{opacity:.6;cursor:wait}
+.btn.ghost{background:rgba(110,82,160,.07);color:var(--vio-2);border:1px solid rgba(110,82,160,.35)}
+.btn.small{padding:7px 14px;font-size:13px}
+.stamp{font-size:13px;color:var(--muted)}
+.stamp b{color:var(--ink)}
+.note{background:var(--vio-tint);border-radius:14px;padding:14px 18px;color:var(--vio-2);font-size:14px;margin-bottom:18px}
+.note.err{background:var(--red-tint);color:#8D3B2D}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh);padding:18px 20px;margin-bottom:18px}
+.tblwrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:420px}
+th{font:700 12px var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid rgba(25,27,46,.06);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.who{font-weight:800;font-size:16px;background:none;border:none;color:var(--vio-2);padding:0;text-align:left}
+.who:hover{text-decoration:underline}
+.who small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.cell{display:inline-flex;flex-direction:column;min-width:96px;padding:7px 12px;border-radius:12px;border:none;text-align:left;font-size:13px;color:var(--ink)}
+.cell b{font-size:16px}
+.cell span{font-size:11.5px;color:var(--muted)}
+.c-done{background:var(--jade-tint)}.c-done b{color:var(--jade)}
+.c-mid{background:var(--gold-tint)}.c-mid b{color:var(--gold-2)}
+.c-low{background:var(--red-tint)}.c-low b{color:var(--red)}
+.c-none{background:var(--grey-tint)}.c-none b{color:var(--muted);font-size:13px}
+.dos h2{font-size:24px;margin-bottom:4px}
+.hw{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.hw:first-of-type{border-top:none;margin-top:6px;padding-top:0}
+.hwh{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin-bottom:10px}
+.hwh h3{font-size:19px}
+.meta{font-size:13px;color:var(--muted)}
+.sec{background:#fff;border:1px solid rgba(25,27,46,.08);border-radius:14px;padding:12px 14px;margin:10px 0}
+.sec h4{margin:0 0 4px;font:800 14px var(--sans)}
+.sec .line{font-size:14px}
+.pbar{height:6px;border-radius:9px;background:var(--grey-tint);margin:8px 0 6px;overflow:hidden}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#8785C7,#4E4C8E);border-radius:9px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font:500 14px var(--han);padding:4px 10px;border-radius:999px;background:var(--grey-tint);color:var(--ink-3);line-height:1.3}
+.chip small{font:600 11px var(--sans);color:var(--muted);margin-left:4px}
+.chip.ok{background:var(--jade-tint);color:var(--jade)}
+.chip.warn{background:var(--gold-tint);color:var(--gold-2)}
+.chip.bad{background:var(--red-tint);color:var(--red)}
+.lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:10px}
+.tr{font-size:14px;padding:7px 0;border-top:1px dashed rgba(25,27,46,.1)}
+.tr:first-of-type{border-top:none}
+.tr .zh{font-family:var(--han)}
+.tr .ans{color:var(--red);font-family:var(--han)}
+.legend{font-size:12px;color:var(--muted);margin-top:8px}
+.rep textarea{width:100%;min-height:200px;border:1px solid var(--line);border-radius:12px;padding:12px;font:14px/1.5 var(--sans);background:#fff;color:var(--ink)}
+.empty{color:var(--muted);font-size:14px}
+.lnk{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lnk a,.lnk button{font:700 12.5px var(--sans);padding:5px 11px;border-radius:999px;border:1px solid rgba(110,82,160,.35);background:rgba(110,82,160,.07);color:var(--vio-2);text-decoration:none;cursor:pointer}
+.lnk a:hover,.lnk button:hover{background:var(--vio-tint)}
+th .lnk{display:flex;margin-top:4px}th .lnk a{font-size:11px;padding:3px 8px;text-transform:none;letter-spacing:0}
+.mat{display:flex;flex-direction:column;gap:8px}.mat .row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}.mat .row b{min-width:180px}
+.keybox{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.keybox input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:999px;padding:10px 16px;font:15px var(--sans)}
+@media (max-width:600px){.top h1{font-size:22px}.wrap{padding-top:18px}}
+</style></head><body>
+<div class="wrap">
+  <div class="top">
+    <div class="seal">师</div>
+    <div class="grow"><h1>Кабинет учителя · HSK 3</h1><div class="sub">Прогресс по домашним заданиям</div></div>
+    <div style="text-align:right">
+      <button class="btn dark" id="refresh">↻ Обновить результаты</button>
+      <div class="stamp" id="stamp"></div>
+    </div>
+  </div>
+  <div id="msg"></div>
+  <div class="card"><div class="tblwrap" id="table"></div></div>
+  <div id="mat"></div>
+  <div id="dossier"></div>
+</div>
+<script>
+/* Данные загружаются ТОЛЬКО по кнопке «Обновить результаты». Никаких таймеров и автообновления. */
+const API=/workers\.dev$/.test(location.hostname)?'/api/all':'https://hsk-progress.ch-tutor-world.workers.dev/api/all';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let KEY='', DATA=null, OPEN=null;
+try{ const m=location.hash.match(/k=([A-Za-z0-9]+)/); if(m){ localStorage.setItem('kab-key',m[1]); history.replaceState(null,'',location.pathname); } KEY=localStorage.getItem('kab-key')||''; }catch(e){ const m=location.hash.match(/k=([A-Za-z0-9]+)/); if(m)KEY=m[1]; }
+try{ DATA=JSON.parse(localStorage.getItem('kab-data')||'null'); OPEN=localStorage.getItem('kab-open'); }catch(e){}
+
+function when(ts){ if(!ts)return '—'; const d=new Date(ts), n=new Date(), t=d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  const day=Math.round((new Date(n.toDateString())-new Date(d.toDateString()))/864e5);
+  return day===0?'сегодня '+t:day===1?'вчера '+t:d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+' '+t; }
+function plural(n,a,b,c){ n=Math.abs(n)%100; const m=n%10; return (n>10&&n<20)?c:m===1?a:(m>=2&&m<=4)?b:c; }
+
+/* прогресс раздела 0..1 */
+function secP(s){ if(s.kind==='game'||s.kind==='pairs') return s.games>0?1:0;
+  const ok=(s.items||[]).filter(x=>x.ok).length; return s.of?ok/s.of:0; }
+function hwP(d){ if(!d||!d.sec||!d.sec.length)return 0; return d.sec.reduce((a,s)=>a+secP(s),0)/d.sec.length; }
+function cls(p,started){ if(!started)return 'c-none'; return p>=0.9?'c-done':p>=0.4?'c-mid':'c-low'; }
+
+function teach(u){ return u+(u.includes('?')?'&':'?')+'uchitel'; }
+function hwUrl(s,w){ return (s&&s.urls&&s.urls[w.id])||w.url||''; }
+function links(u,stud){ if(!u)return ''; return '<span class="lnk"><a href="'+esc(teach(u))+'" target="_blank" rel="noopener" title="Открыть для проверки: ответы не попадут в кабинет">👩‍🏫 открыть</a>'+(stud?'<button data-copy="'+esc(u)+'" title="Скопировать ссылку для ученика">📋 ссылка ученику</button>':'')+'</span>'; }
+function materials(){ const R=DATA&&DATA.roster; if(!R){$('mat').innerHTML='';return;}
+  const grp=(t,rows)=>rows.length?'<div class="lbl" style="margin:4px 0 6px">'+t+'</div><div class="mat">'+rows.map(x=>'<div class="row"><b>'+esc(x.title)+'</b>'+links(x.url,1)+'</div>').join('')+'</div>':'';
+  const les=(R.links||[]), hw=R.hws.filter(w=>w.url);
+  $('mat').innerHTML=(les.length||hw.length)?'<div class="card"><h3 style="margin-bottom:8px">Виджеты</h3>'+grp('Классные виджеты',les)+grp('Домашние задания',hw)+'<div class="legend">«Открыть» — для вашей проверки (с пометкой ?uchitel, в кабинет ничего не попадает). «Ссылка ученику» копирует обычную ссылку.</div></div>':''; }
+function stamp(){ $('stamp').innerHTML=DATA?'Данные от <b>'+when(DATA.at)+'</b> · обновляются только по кнопке':'Данные ещё не загружены'; }
+function msg(t,err){ $('msg').innerHTML=t?'<div class="note'+(err?' err':'')+'">'+t+'</div>':''; }
+
+function askKey(){
+  msg('Чтобы открыть кабинет, нужна ваша ссылка с ключом. Можно вставить ключ сюда:<div class="keybox"><input id="keyIn" placeholder="ключ"><button class="btn dark small" id="keyOk">Сохранить</button></div>');
+  $('keyOk').onclick=()=>{ KEY=$('keyIn').value.trim(); try{localStorage.setItem('kab-key',KEY);}catch(e){} msg('Ключ сохранён. Нажмите «Обновить результаты».'); };
+}
+
+async function refresh(){
+  if(!KEY){ askKey(); return; }
+  const b=$('refresh'); b.disabled=true; b.textContent='Загружаю…';
+  try{ const r=await fetch(API+'?t='+Date.now(),{headers:{'X-Key':KEY},cache:'no-store'});
+    if(r.status===401){ KEY=''; try{localStorage.removeItem('kab-key');}catch(e){} askKey(); return; }
+    if(!r.ok) throw new Error(r.status);
+    DATA=await r.json(); try{localStorage.setItem('kab-data',JSON.stringify(DATA));}catch(e){}
+    msg(''); render();
+  }catch(e){ msg('Не получилось загрузить данные. Проверьте интернет и нажмите ещё раз.',true); }
+  finally{ b.disabled=false; b.textContent='↻ Обновить результаты'; stamp(); }
+}
+
+function render(){
+  stamp();
+  if(!DATA){ $('table').innerHTML='<div class="empty">Нажмите «Обновить результаты», чтобы загрузить прогресс учеников.</div>'; $('dossier').innerHTML=''; return; }
+  const R=DATA.roster, D=DATA.data||{};
+  if(!R.students.length){ $('table').innerHTML='<div class="empty">Учеников пока нет.</div>'; return; }
+  let h='<table><thead><tr><th>Ученик</th>'+R.hws.map(w=>'<th>'+esc(w.title)+(w.url?'<span class="lnk"><a href="'+esc(teach(w.url))+'" target="_blank" rel="noopener">открыть ↗</a></span>':'')+'</th>').join('')+'<th>Последний раз</th></tr></thead><tbody>';
+  R.students.forEach(s=>{ const my=D[s.id]||{}, own=s.hws||R.hws.map(w=>w.id);
+    const last=Math.max(0,...Object.values(my).map(d=>d.last||0));
+    h+='<tr><td><button class="who" data-s="'+s.id+'">'+esc(s.name)+'<small>'+(s.note?esc(s.note):'открыть подробно')+'</small></button></td>'+
+      R.hws.map(w=>{ if(!own.includes(w.id))return '<td></td>'; const d=my[w.id], p=hwP(d);
+        return '<td><button class="cell '+cls(p,!!d)+'" data-s="'+s.id+'" data-h="'+w.id+'">'+(d?'<b>'+Math.round(p*100)+'%</b><span>'+when(d.last)+'</span>':'<b>не начато</b><span>&nbsp;</span>')+'</button></td>'; }).join('')+
+      '<td class="meta">'+(last?when(last):'—')+'</td></tr>'; });
+  h+='</tbody></table><div class="legend">Цвет: зелёный — почти всё сделано, жёлтый — в процессе, розовый — только начато, серый — не открывали. Нажмите на имя или клетку, чтобы увидеть подробности.</div>';
+  $('table').innerHTML=h; materials();
+  if(OPEN&&R.students.some(s=>s.id===OPEN)) dossier(OPEN); else $('dossier').innerHTML='';
+}
+
+function secHTML(s){
+  const p=secP(s); let h='<div class="sec"><h4>'+esc(s.name)+'</h4>';
+  if(s.kind==='game'){
+    if(!s.games) return h+'<div class="line empty">Ещё не начато</div></div>';
+    h+='<div class="line">Сыграно раундов: <b>'+s.games+'</b> · лучший: <b>'+s.best+' из '+s.of+'</b> · последний: '+s.last+' из '+s.of+'</div>';
+    const m=Object.entries(s.miss||{}).sort((a,b)=>b[1]-a[1]);
+    h+=m.length?'<div class="lbl">Ошибки в словах (в скольких раундах)</div><div class="chips">'+m.map(([z,n])=>'<span class="chip '+(n>=2?'bad':'warn')+'">'+esc(z)+'<small>×'+n+'</small></span>').join('')+'</div>':'<div class="line">Без ошибок 🌟</div>';
+  } else if(s.kind==='pairs'){
+    if(!s.games) return h+'<div class="line empty">Ещё не начато</div></div>';
+    h+='<div class="line">Сыграно игр: <b>'+s.games+'</b> · лучший результат: <b>'+s.best+' '+plural(s.best,'попытка','попытки','попыток')+'</b> (минимум '+s.of+') · последняя: '+s.last+'</div>';
+  } else if(s.kind==='write'){
+    const it=s.items||[], ok=it.filter(x=>x.ok);
+    const tries=it.reduce((a,x)=>a+(x.m||0)+(x.t||0),0), errs=it.reduce((a,x)=>a+(x.e||0),0), hints=it.reduce((a,x)=>a+(x.h||0),0);
+    h+='<div class="line">Засчитано по памяти: <b>'+ok.length+' из '+s.of+'</b> · всего попыток написания: <b>'+tries+'</b> · неверных черт: '+errs+' · подсказок: '+hints+'</div><div class="pbar"><i style="width:'+(p*100).toFixed(0)+'%"></i></div>';
+    if(it.length){ h+='<div class="chips">'+it.map(x=>{ const hard=(x.e||0)>=4||(x.h||0)>=2||(x.m||0)>=3; const c=x.ok?(hard?'warn':'ok'):((x.m||0)>0?'bad':'');
+      return '<span class="chip '+c+'" title="по памяти: '+(x.m||0)+', обвести: '+(x.t||0)+', неверных черт: '+(x.e||0)+', подсказок: '+(x.h||0)+'">'+esc(x.w)+'<small>'+(x.m||0)+'/'+(x.t||0)+(x.e?' · ✗'+x.e:'')+'</small></span>'; }).join('')+'</div>'+
+      '<div class="legend">Под словом: попыток по памяти / обводок · ✗ неверные черты. Зелёный — засчитано легко, жёлтый — засчитано, но с трудом, розовый — пробовали по памяти, пока не засчитано, серый — только обводили.</div>'; }
+    const left=s.of-ok.length; if(left>0) h+='<div class="legend">Не засчитано ещё: '+left+' '+plural(left,'слово','слова','слов')+'.</div>';
+  } else if(s.kind==='translate'){
+    const it=s.items||[], ok=it.filter(x=>x.ok);
+    const kb=ok.filter(x=>x.via==='kb').length, hand=ok.filter(x=>x.via==='hand').length, self=ok.filter(x=>x.via==='self').length;
+    h+='<div class="line">Переведено: <b>'+ok.length+' из '+s.of+'</b>'+(ok.length?' · клавиатурой '+kb+', пальцем '+hand+(self?', кнопкой «у меня верно» '+self:''):'')+'</div><div class="pbar"><i style="width:'+(p*100).toFixed(0)+'%"></i></div>';
+    const cells=it.reduce((a,x)=>a+(x.cells||0),0); if(cells){ const clean=it.reduce((a,x)=>a+(x.clean||0),0), hc=it.reduce((a,x)=>a+(x.hc||0),0);
+      h+='<div class="line">Пальцем написано знаков: <b>'+cells+'</b>, из них без подсказок '+clean+' · нажатий «Подсказка»: '+hc+'</div>'; }
+    const prob=it.filter(x=>(x.bad&&x.bad.length)||x.via==='self'||(x.hc||0)>=2);
+    if(prob.length){ h+='<div class="lbl">Стоит посмотреть</div>'+prob.map(x=>'<div class="tr">'+x.n+'. '+esc(x.ru)+' → <span class="zh">'+esc(x.zh)+'</span>'+
+      ((x.bad||[]).length?'<br>Варианты ученика: '+x.bad.map(a=>'<span class="ans">'+esc(a)+'</span>').join(' · '):'')+
+      (x.via==='self'?'<br><i>засчитано кнопкой «у меня верно»</i>':'')+((x.hc||0)>=2?'<br>подсказок при письме: '+x.hc:'')+'</div>').join(''); }
+  }
+  return h+'</div>';
+}
+
+function report(s,my,R){
+  const L=['Ученик: '+s.name,''];
+  R.hws.forEach(w=>{ const d=my[w.id]; if(!d)return;
+    L.push(w.title+' — '+Math.round(hwP(d)*100)+'%, последний заход '+when(d.last)+', в работе около '+(d.mins||0)+' мин.');
+    d.sec.forEach(x=>{
+      if(x.kind==='game') L.push('• '+x.name+': '+(x.games?('раундов '+x.games+', лучший '+x.best+'/'+x.of+(Object.keys(x.miss||{}).length?'; повторить: '+Object.keys(x.miss).join(', '):'')):'не сделано'));
+      else if(x.kind==='pairs') L.push('• '+x.name+': '+(x.games?('игр '+x.games+', лучший результат '+x.best+' попыток'):'не сделано'));
+      else if(x.kind==='write'){ const it=x.items||[], ok=it.filter(i=>i.ok).length, hard=it.filter(i=>(i.e||0)>=4||(i.h||0)>=2||(!i.ok&&(i.m||0)>0)).map(i=>i.w);
+        L.push('• '+x.name+': '+ok+' из '+x.of+' по памяти'+(hard.length?'; трудные: '+hard.join(', '):'')); }
+      else if(x.kind==='translate'){ const it=x.items||[], ok=it.filter(i=>i.ok).length, bad=it.filter(i=>(i.bad||[]).length).map(i=>i.zh);
+        L.push('• '+x.name+': '+ok+' из '+x.of+(bad.length?'; были ошибки в: '+bad.join(' '):'')); }
+    }); L.push(''); });
+  return L.join('\n').trim();
+}
+
+function dossier(id){
+  OPEN=id; try{localStorage.setItem('kab-open',id);}catch(e){}
+  const R=DATA.roster, s=R.students.find(x=>x.id===id), my=(DATA.data||{})[id]||{};
+  const list=R.hws.filter(w=>my[w.id]).sort((a,b)=>(my[b.id].last||0)-(my[a.id].last||0));
+  let h='<div class="card dos"><div class="hwh"><h2>'+esc(s.name)+'</h2><span class="meta">'+(s.note?esc(s.note)+' · ':'')+'начатых ДЗ: '+list.length+' из '+(s.hws||R.hws).length+'</span><span class="grow"></span><button class="btn ghost small" id="close">Свернуть</button></div>';
+  const sl=s.links||R.links||[]; if(sl.length) h+='<div class="mat" style="margin:4px 0 14px">'+sl.map(l=>'<div class="row"><b>'+esc(l.title)+'</b>'+links(l.url,1)+'</div>').join('')+'</div>';
+  if(!list.length) h+='<div class="empty">Пока ни одного открытого задания.</div>';
+  list.forEach(w=>{ const d=my[w.id];
+    h+='<div class="hw" id="hw-'+w.id+'"><div class="hwh"><h3>'+esc(w.title)+'</h3><b>'+Math.round(hwP(d)*100)+'%</b><span class="meta">первый заход '+when(d.first)+' · последний '+when(d.last)+' · в работе ~'+(d.mins||0)+' мин · открывали '+(d.opens||1)+' '+plural(d.opens||1,'раз','раза','раз')+' · '+esc(d.dev||'')+'</span>'+links(hwUrl(s,w),1)+'</div>'+
+      d.sec.map(secHTML).join('')+'</div>'; });
+  const todo=(s.hws?R.hws.filter(w=>s.hws.includes(w.id)):R.hws).filter(w=>!my[w.id]);
+  if(todo.length) h+='<div class="hw"><h3>Ещё не открывали</h3>'+todo.map(w=>'<div class="hwh" style="margin-top:8px"><b>'+esc(w.title)+'</b>'+links(hwUrl(s,w),1)+'</div>').join('')+'</div>';
+  if(list.length) h+='<div class="rep hw"><h3>Отчёт текстом</h3><p class="meta">Можно поправить и скопировать.</p><textarea id="repText">'+esc(report(s,my,R))+'</textarea><button class="btn dark small" id="repCopy">Скопировать</button> <span class="meta" id="repFb"></span></div>';
+  h+='</div>';
+  $('dossier').innerHTML=h;
+  $('close').onclick=()=>{ OPEN=null; try{localStorage.removeItem('kab-open');}catch(e){} $('dossier').innerHTML=''; };
+  if($('repCopy')) $('repCopy').onclick=()=>{ const t=$('repText'); t.select(); (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>$('repFb').textContent='Скопировано',()=>{document.execCommand('copy');$('repFb').textContent='Скопировано';}); };
+}
+
+$('refresh').onclick=refresh;
+document.addEventListener('click',e=>{ const cp=e.target.closest('[data-copy]'); if(cp){ const t=cp.textContent; (navigator.clipboard?navigator.clipboard.writeText(cp.dataset.copy):Promise.reject()).then(()=>{cp.textContent='✓ скопировано';setTimeout(()=>cp.textContent=t,1500);},()=>prompt('Ссылка для ученика:',cp.dataset.copy)); return; }
+  const b=e.target.closest('[data-s]'); if(!b)return; dossier(b.dataset.s);
+  const t=b.dataset.h?document.getElementById('hw-'+b.dataset.h):$('dossier'); if(t)t.scrollIntoView({behavior:'smooth',block:'start'}); });
+if(!KEY) askKey();
+render();
+</script>
+</body></html>
