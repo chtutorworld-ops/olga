@@ -2,7 +2,7 @@
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Кабинет учителя HSK 3</title>
+<title>Кабинет учителя</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#191B2E;--ink-3:#3E4262;--paper:#F5F0E7;--paper-2:#EBE3D4;--card:#FBF9F4;--muted:#6C6982;--line:#DCD3C2;
@@ -83,7 +83,7 @@ th .lnk{display:flex;margin-top:4px}th .lnk a{font-size:11px;padding:3px 8px;tex
 <div class="wrap">
   <div class="top">
     <div class="seal">师</div>
-    <div class="grow"><h1>Кабинет учителя · HSK 3</h1><div class="sub">Прогресс по домашним заданиям</div></div>
+    <div class="grow"><h1>Кабинет учителя</h1><div class="sub">Прогресс по домашним заданиям</div></div>
     <div style="text-align:right">
       <button class="btn dark" id="refresh">↻ Обновить результаты</button>
       <div class="stamp" id="stamp"></div>
@@ -115,6 +115,8 @@ function plural(n,a,b,c){ n=Math.abs(n)%100; const m=n%10; return (n>10&&n<20)?c
 
 /* прогресс раздела 0..1 */
 function secP(s){ if(s.kind==='game'||s.kind==='pairs') return s.games>0?1:0;
+  if(s.kind==='zones') return s.done?1:0;
+  if(s.kind==='cards') return s.of?(s.items||[]).length/s.of:0;
   const ok=(s.items||[]).filter(x=>x.ok).length; return s.of?ok/s.of:0; }
 function hwP(d){ if(!d||!d.sec||!d.sec.length)return 0; return d.sec.reduce((a,s)=>a+secP(s),0)/d.sec.length; }
 function cls(p,started){ if(!started)return 'c-none'; return p>=0.9?'c-done':p>=0.4?'c-mid':'c-low'; }
@@ -212,6 +214,24 @@ function secHTML(s){
       return '<span class="chip '+c+'" title="по памяти: '+(x.m||0)+', обвести: '+(x.t||0)+', неверных черт: '+(x.e||0)+', подсказок: '+(x.h||0)+'">'+esc(x.w)+'<small>'+(x.m||0)+'/'+(x.t||0)+(x.e?' · ✗'+x.e:'')+'</small></span>'; }).join('')+'</div>'+
       '<div class="legend">Под словом: попыток по памяти / обводок · ✗ неверные черты. Зелёный — засчитано легко, жёлтый — засчитано, но с трудом, розовый — пробовали по памяти, пока не засчитано, серый — только обводили.</div>'; }
     const left=s.of-ok.length; if(left>0) h+='<div class="legend">Не засчитано ещё: '+left+' '+plural(left,'слово','слова','слов')+'.</div>';
+  } else if(s.kind==='cards'){
+    const it=s.items||[], ok=it.filter(x=>x.ok), ap=it.filter(x=>!x.ok&&x.ap), bad=it.filter(x=>!x.ok&&!x.ap);
+    if(!it.length) return h+'<div class="line empty">Ещё не начато</div></div>';
+    h+='<div class="line">Ответил: <b>'+it.length+' из '+s.of+'</b> · верно сразу: <b>'+ok.length+'</b>'+(ap.length?' · по апелляции: <b>'+ap.length+'</b>':'')+' · не узнал: '+bad.length+(s.done?' · задание закрыто':'')+'</div><div class="pbar"><i style="width:'+(p*100).toFixed(0)+'%"></i></div>';
+    if(ap.length) h+='<div class="lbl">Апелляции: проверьте ответ</div>'+ap.map(x=>'<div class="tr"><span class="zh">'+esc(x.w)+'</span> ('+esc(x.ru)+') → ученик: <span class="ans">'+esc(x.a)+'</span></div>').join('');
+    if(bad.length) h+='<div class="lbl">Не узнал</div>'+bad.map(x=>'<div class="tr"><span class="zh">'+esc(x.w)+'</span> ('+esc(x.ru)+') → '+(x.a?'ученик: <span class="ans">'+esc(x.a)+'</span>':'<i>«не знаю»</i>')+'</div>').join('');
+  } else if(s.kind==='hzwrite'){
+    const it=s.items||[], ok=it.filter(x=>x.ok);
+    if(!it.length) return h+'<div class="line empty">Ещё не начато</div></div>';
+    const clean=ok.filter(x=>!x.h&&!x.r&&!x.a).length, hn=it.reduce((a,x)=>a+(x.hn||0),0), rv=it.filter(x=>x.r).length, er=it.reduce((a,x)=>a+(x.e||0),0);
+    h+='<div class="line">Написано: <b>'+ok.length+' из '+s.of+'</b> · сам без подсказок: <b>'+clean+'</b> · подсказок взял: '+hn+' · показано целиком: '+rv+' · неверных черт: '+er+'</div><div class="pbar"><i style="width:'+(p*100).toFixed(0)+'%"></i></div>';
+    h+='<div class="chips">'+it.map(x=>{ const c=x.r?'bad':(x.h||x.a||(x.e||0)>2)?'warn':(x.ok?'ok':'');
+      return '<span class="chip '+c+'" title="'+esc(x.ru)+': неверных черт '+(x.e||0)+', авто-подсказок '+(x.a||0)+', подсказка до уровня '+(x.h||0)+(x.r?', показан целиком':'')+'">'+esc(x.w)+'<small>'+(x.r?'показан':x.h?'💡'+x.h:'')+(x.e?' ✗'+x.e:'')+'</small></span>'; }).join('')+'</div>'+
+      '<div class="legend">💡N — до какой подсказки дошёл (1 первая черта, 2 ключ, 3 ключ в клетке), ✗ — неверные черты, «показан» — нажал красную кнопку. Наведите на слово, чтобы увидеть детали.</div>';
+  } else if(s.kind==='zones'){
+    if(!s.done) return h+'<div class="line empty">Появится, когда ученик закончит оба задания</div></div>';
+    const z=(t,a,c)=>'<div class="lbl">'+t+' — '+a.length+'</div>'+(a.length?'<div class="chips">'+a.map(w=>'<span class="chip '+c+'">'+esc(w)+'</span>').join('')+'</div>':'<div class="line empty">нет</div>');
+    h+=z('🟢 Знает',s.g||[],'ok')+z('🟡 Повторить',s.y||[],'warn')+z('🔴 Особое внимание',s.r||[],'bad');
   } else if(s.kind==='translate'){
     const it=s.items||[], ok=it.filter(x=>x.ok);
     const kb=ok.filter(x=>x.via==='kb').length, hand=ok.filter(x=>x.via==='hand').length, self=ok.filter(x=>x.via==='self').length;
@@ -235,6 +255,11 @@ function report(s,my,R){
       else if(x.kind==='pairs') L.push('• '+x.name+': '+(x.games?('игр '+x.games+', лучший результат '+x.best+' попыток'):'не сделано'));
       else if(x.kind==='write'){ const it=x.items||[], ok=it.filter(i=>i.ok).length, hard=it.filter(i=>(i.e||0)>=4||(i.h||0)>=2||(!i.ok&&(i.m||0)>0)).map(i=>i.w);
         L.push('• '+x.name+': '+ok+' из '+x.of+' по памяти'+(hard.length?'; трудные: '+hard.join(', '):'')); }
+      else if(x.kind==='cards'){ const it=x.items||[], ok=it.filter(i=>i.ok).length, ap=it.filter(i=>!i.ok&&i.ap), bad=it.filter(i=>!i.ok&&!i.ap);
+        L.push('• '+x.name+': ответил '+it.length+' из '+x.of+', верно '+ok+(ap.length?'; апелляции: '+ap.map(i=>i.w+' «'+i.a+'»').join(', '):'')+(bad.length?'; не узнал: '+bad.map(i=>i.w).join(' '):'')); }
+      else if(x.kind==='hzwrite'){ const it=x.items||[], ok=it.filter(i=>i.ok).length, hard=it.filter(i=>i.r||(i.h||0)>=2).map(i=>i.w);
+        L.push('• '+x.name+': написано '+ok+' из '+x.of+(hard.length?'; трудные: '+hard.join(' '):'')); }
+      else if(x.kind==='zones'){ if(x.done) L.push('• Зоны: 🟢 '+(x.g||[]).join(' ')+' | 🟡 '+((x.y||[]).join(' ')||'—')+' | 🔴 '+((x.r||[]).join(' ')||'—')); }
       else if(x.kind==='translate'){ const it=x.items||[], ok=it.filter(i=>i.ok).length, bad=it.filter(i=>(i.bad||[]).length).map(i=>i.zh);
         L.push('• '+x.name+': '+ok+' из '+x.of+(bad.length?'; были ошибки в: '+bad.join(' '):'')); }
     }); L.push(''); });
