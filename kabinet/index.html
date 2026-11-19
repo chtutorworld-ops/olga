@@ -124,10 +124,20 @@ function cls(p,started){ if(!started)return 'c-none'; return p>=0.9?'c-done':p>=
 function teach(u){ return u+(u.includes('?')?'&':'?')+'uchitel'; }
 function hwUrl(s,w){ return (s&&s.urls&&s.urls[w.id])||w.url||''; }
 function links(u,stud){ if(!u)return ''; return '<span class="lnk"><a href="'+esc(teach(u))+'" target="_blank" rel="noopener" title="Открыть для проверки: ответы не попадут в кабинет">👩‍🏫 открыть</a>'+(stud?'<button data-copy="'+esc(u)+'" title="Скопировать ссылку для ученика">📋 ссылка ученику</button>':'')+'</span>'; }
-function materials(){ const R=DATA&&DATA.roster; if(!R){$('mat').innerHTML='';return;}
-  const grp=(t,rows)=>rows.length?'<div class="lbl" style="margin:4px 0 6px">'+t+'</div><div class="mat">'+rows.map(x=>'<div class="row"><b>'+esc(x.title)+'</b>'+links(x.url,1)+'</div>').join('')+'</div>':'';
-  const les=(R.links||[]), hw=R.hws.filter(w=>w.url);
-  $('mat').innerHTML=(les.length||hw.length)?'<div class="card"><h3 style="margin-bottom:8px">Виджеты</h3>'+grp('Классные виджеты',les)+grp('Домашние задания',hw)+'<div class="legend">«Открыть» — для вашей проверки (с пометкой ?uchitel, в кабинет ничего не попадает). «Ссылка ученику» копирует обычную ссылку.</div></div>':''; }
+/* Все виджеты: встроенный список (виден сразу, даже до «Обновить результаты») + то, что есть в roster. Повторы по ссылке убираются. */
+const G='https://chtutorworld-ops.github.io/olga/';
+const ALL_LINKS=[
+  ['Классные виджеты',[['HSK 3 · урок 1 (классный)',G+'hsk3-urok1/'],['HSK 3 · урок 2 (классный)',G+'hsk3-urok2/'],['New HSK 2 · урок 1 (Максим)',G+'maksim-hsk2-urok1/']]],
+  ['Домашние задания',[['HSK 3 · урок 1 · ДЗ',G+'hsk3-urok1-dz/'],['HSK 3.0 · новое на уровнях 1–2 (слова, грамматика, тест)',G+'hsk30-novoe/']]],
+  ['Карточки слов',[['HSK 3.0 · новые слова уровней 1–2',G+'hsk30-slova/'],['HSK 1 · слова',G+'hsk1-slova/'],['HSK 2 · слова',G+'hsk2-slova/'],['HSK 3 · слова',G+'hsk3-slova/'],['HSK 4 · слова',G+'hsk4-slova/']]]];
+function materials(){ const R=DATA&&DATA.roster, seen=new Set(), norm=u=>String(u||'').replace(/[?#].*$/,'');
+  const groups=ALL_LINKS.map(([t,rows])=>[t,rows.map(([title,url])=>({title,url}))]);
+  groups.forEach(([t,rows])=>rows.forEach(x=>seen.add(norm(x.url))));
+  if(R){ const extra=[]; [...(R.links||[]),...(R.hws||[]).filter(w=>w.url)].forEach(x=>{ const u=norm(x.url); if(!u||seen.has(u))return; seen.add(u);
+      extra.push({title:String(x.title||'').replace(/,? ?блок \d+$/,''),url:x.url}); });
+    if(extra.length) groups.push(['Другое',extra]); }
+  const grp=(t,rows)=>rows.length?'<div class="lbl" style="margin:10px 0 6px">'+t+'</div><div class="mat">'+rows.map(x=>'<div class="row"><b>'+esc(x.title)+'</b>'+links(x.url,1)+'</div>').join('')+'</div>':'';
+  $('mat').innerHTML='<div class="card"><h3 style="margin-bottom:8px">Все виджеты</h3>'+groups.map(([t,r])=>grp(t,r)).join('')+'<div class="legend">«Открыть» — для вашей проверки (с пометкой ?uchitel, в кабинет ничего не попадает). «Ссылка ученику» копирует обычную ссылку.</div></div>'; }
 function stamp(){ $('stamp').innerHTML=DATA?'Данные от <b>'+when(DATA.at)+'</b> · обновляются только по кнопке'+(DATA.src&&DATA.src.length>1?'<br>'+DATA.src.map(x=>(x.ok?'✓ ':'✗ ')+esc(x.n)).join(' · '):''):'Данные ещё не загружены'; }
 function msg(t,err){ $('msg').innerHTML=t?'<div class="note'+(err?' err':'')+'">'+t+'</div>':''; }
 
@@ -180,7 +190,7 @@ function backupUp(file){
   r.readAsText(file); }
 
 function render(){
-  stamp();
+  stamp(); materials();
   if(!DATA){ $('table').innerHTML='<div class="empty">Нажмите «Обновить результаты», чтобы загрузить прогресс учеников.</div>'; $('dossier').innerHTML=''; return; }
   const R=DATA.roster, D=DATA.data||{};
   if(!R.students.length){ $('table').innerHTML='<div class="empty">Учеников пока нет.</div>'; return; }
